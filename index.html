@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>吃貨地圖GO! 台灣美食大冒險 (Kawaii Edition)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                        fun: ['"Fredoka"', 'sans-serif'],
+                    },
+                    colors: {
+                        kawaii: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            pink: '#ffb6c1',
+                            mint: '#a7f3d0',
+                            yellow: '#fef08a',
+                            purple: '#e9d5ff',
+                            blue: '#bae6fd'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, #ffe4e6 0%, #fef08a 50%, #bae6fd 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(3deg); }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-pulse-soft {
+            animation: pulse-soft 2s ease-in-out infinite;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-3 sm:p-6 text-gray-800 relative select-none">
+
+    <!-- Floating Background Decor Emojis -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0 opacity-40">
+        <div class="absolute top-10 left-10 text-4xl animate-float">🧋</div>
+        <div class="absolute top-20 right-16 text-4xl animate-float" style="animation-delay: 1s;">🥟</div>
+        <div class="absolute bottom-16 left-20 text-4xl animate-float" style="animation-delay: 2s;">🥭</div>
+        <div class="absolute bottom-20 right-20 text-4xl animate-float" style="animation-delay: 1.5s;">🍍</div>
+    </div>
+
+    <!-- Header / Title & Audio Toggle -->
+    <header class="mb-4 text-center z-10 w-full max-w-2xl flex items-center justify-between px-2">
+        <div class="text-left">
+            <h1 class="text-2xl sm:text-4xl font-black text-rose-600 tracking-wider font-fun drop-shadow-sm flex items-center gap-2">
+                <span>🌟</span> 吃貨地圖 GO!
+            </h1>
+            <p class="text-xs sm:text-sm text-gray-600 font-medium">✨ Kawaii 台灣美食大冒險 ✨</p>
+        </div>
+        <!-- BGM Toggle Button -->
+        <button id="bgm-toggle-btn" onclick="toggleBGM()" class="flex items-center gap-2 px-3.5 py-2 bg-white/80 hover:bg-white text-rose-500 font-bold rounded-full shadow-md border border-rose-200 transition transform hover:scale-105 active:scale-95 text-xs sm:text-sm">
+            <i id="bgm-icon" class="fa-solid fa-volume-xmark text-lg"></i>
+            <span id="bgm-text">音樂關閉</span>
+        </button>
+    </header>
+
+    <!-- Main Game Container -->
+    <main id="game-container" class="w-full max-w-2xl bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl border-4 border-rose-200 p-4 sm:p-8 relative z-10 overflow-hidden">
+        
+        <!-- ==================== 1. START SCREEN ==================== -->
+        <div id="screen-start" class="text-center py-6 sm:py-8 space-y-6">
+            <div class="w-32 h-32 sm:w-40 sm:h-40 mx-auto bg-gradient-to-tr from-rose-300 via-pink-300 to-amber-200 rounded-full flex items-center justify-center shadow-lg text-6xl sm:text-7xl animate-float border-4 border-white">
+                🐱‍👤🍜
+            </div>
+            <div class="space-y-3 max-w-md mx-auto">
+                <h2 class="text-2xl sm:text-3xl font-black text-gray-800 font-fun">歡迎來到 Kawaii 美食世界！</h2>
+                <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
+                    準備好展開 4 個超萌的台灣美食闖關挑戰了嗎？<br>
+                    <span class="inline-block mt-2 px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-bold">🎯 關卡 1：美食記憶翻牌</span>
+                    <span class="inline-block mt-1 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold">🎮 關卡 2：方向鍵小吃收集大作戰</span><br>
+                    <span class="inline-block mt-1 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">🥢 關卡 3：美味地標快問快答</span>
+                    <span class="inline-block mt-1 px-3 py-1 bg-sky-100 text-sky-700 rounded-full text-xs font-bold">🏆 關卡 4：終極夜市大胃王</span>
+                </p>
+            </div>
+            <button onclick="startGame()" class="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-lg sm:text-xl font-bold font-fun rounded-2xl shadow-lg hover:from-rose-600 hover:to-pink-600 transform hover:-translate-y-1 active:translate-y-0 transition duration-200 border-2 border-white">
+                <i class="fa-solid fa-play"></i> 開始可愛冒險
+            </button>
+        </div>
+
+        <!-- ==================== 2. LEVEL INTRO SCREEN ==================== -->
+        <div id="screen-intro" class="hidden text-center py-8 space-y-6">
+            <div id="intro-badge" class="inline-block px-4 py-1.5 bg-rose-100 text-rose-700 rounded-full text-sm font-bold tracking-wide font-fun">
+                關卡 1 / 4
+            </div>
+            <h2 id="intro-title" class="text-3xl sm:text-4xl font-black text-gray-800 font-fun">美食記憶翻牌</h2>
+            <p id="intro-desc" class="text-gray-600 max-w-md mx-auto text-sm sm:text-base">
+                請在最短時間內找出所有相同的台灣美食配對！
+            </p>
+            <div class="pt-4">
+                <button onclick="startCurrentLevel()" class="px-8 py-3.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white font-bold text-lg font-fun rounded-2xl shadow-md hover:opacity-90 transition border-2 border-white">
+                    準備好了，出發！ 🚀
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== 3. GAMEPLAY HUD & STAGES ==================== -->
+        <div id="screen-game" class="hidden space-y-4">
+            
+            <!-- HUD (Status Bar) -->
+            <div class="flex items-center justify-between bg-rose-50 px-4 py-3 rounded-2xl border border-rose-200 text-sm sm:text-base font-bold text-rose-900">
+                <div class="flex items-center gap-2">
+                    <span id="hud-stage-name" class="bg-rose-500 text-white px-3 py-1 rounded-xl text-xs sm:text-sm font-fun">第一關</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-1.5 bg-white px-3 py-1 rounded-xl shadow-sm border border-rose-100">
+                        <i class="fa-solid fa-stopwatch text-rose-400"></i>
+                        <span id="hud-timer">00:00</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 bg-white px-3 py-1 rounded-xl shadow-sm border border-rose-100">
+                        <i class="fa-solid fa-star text-amber-400"></i>
+                        <span id="hud-score">0 分</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STAGE 1: Memory Match -->
+            <div id="stage-1" class="stage-content hidden">
+                <div class="text-center mb-3">
+                    <p class="text-xs sm:text-sm text-gray-500 font-medium">✨ 點擊卡片翻開，配對相同的台灣經典小吃！ ✨</p>
+                </div>
+                <div id="memory-grid" class="grid grid-cols-4 gap-2.5 sm:gap-3 max-w-md mx-auto">
+                    <!-- Cards generated via JS -->
+                </div>
+            </div>
+
+            <!-- STAGE 2: Arrow Key Movement Navigation Game (New) -->
+            <div id="stage-2" class="stage-content hidden space-y-2">
+                <div class="flex justify-between items-center px-1">
+                    <span class="text-xs sm:text-sm text-gray-600 font-medium">🕹️ 使用鍵盤 <kbd class="px-1.5 py-0.5 bg-gray-100 border rounded text-xs font-mono">方向鍵</kbd> 或 <kbd class="px-1.5 py-0.5 bg-gray-100 border rounded text-xs font-mono">WASD</kbd> 控制貓咪吃貨收集美味！</span>
+                    <span class="text-xs sm:text-sm text-rose-600 font-bold" id="arcade-progress">目標: 10 / 10</span>
+                </div>
+                <div class="relative w-full h-80 sm:h-96 bg-gradient-to-b from-pink-50 via-yellow-50 to-emerald-50 rounded-2xl border-2 border-dashed border-rose-300 overflow-hidden shadow-inner cursor-default select-none" id="arcade-container">
+                    <canvas id="arcade-canvas" class="absolute inset-0 w-full h-full"></canvas>
+                </div>
+                <!-- On-screen touch d-pad for mobile convenience -->
+                <div class="grid grid-cols-3 gap-2 max-w-[200px] mx-auto sm:hidden pt-1">
+                    <div></div>
+                    <button ontouchstart="arcadeMove('up')" onclick="arcadeMove('up')" class="p-3 bg-rose-200 text-rose-800 rounded-xl font-bold active:bg-rose-400">⬆️</button>
+                    <div></div>
+                    <button ontouchstart="arcadeMove('left')" onclick="arcadeMove('left')" class="p-3 bg-rose-200 text-rose-800 rounded-xl font-bold active:bg-rose-400">⬅️</button>
+                    <button ontouchstart="arcadeMove('down')" onclick="arcadeMove('down')" class="p-3 bg-rose-200 text-rose-800 rounded-xl font-bold active:bg-rose-400">⬇️</button>
+                    <button ontouchstart="arcadeMove('right')" onclick="arcadeMove('right')" class="p-3 bg-rose-200 text-rose-800 rounded-xl font-bold active:bg-rose-400">➡️</button>
+                </div>
+            </div>
+
+            <!-- STAGE 3: Trivia Quiz -->
+            <div id="stage-3" class="stage-content hidden space-y-4">
+                <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 shadow-sm">
+                    <span class="text-xs font-bold text-amber-700 uppercase tracking-wider font-fun" id="quiz-counter">問題 1 / 3</span>
+                    <h3 id="quiz-question" class="text-base sm:text-lg font-bold text-gray-900 mt-1">問題載入中...</h3>
+                </div>
+                <div id="quiz-options" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Options generated via JS -->
+                </div>
+            </div>
+
+            <!-- STAGE 4: Night Market Feast Catcher (Expanded Stage) -->
+            <div id="stage-4" class="stage-content hidden space-y-2">
+                <div class="flex justify-between items-center px-1">
+                    <span class="text-xs sm:text-sm text-gray-600 font-medium">🎯 移動竹籃接住豐盛夜市小吃 (避開辣椒雷區！)</span>
+                    <span class="text-xs sm:text-sm text-rose-600 font-bold" id="catch-progress">已接獲: 0 / 8</span>
+                </div>
+                <div class="relative w-full h-80 sm:h-96 bg-gradient-to-b from-sky-100 to-pink-50 rounded-2xl border-2 border-dashed border-rose-300 overflow-hidden shadow-inner cursor-pointer select-none" id="catch-canvas-container">
+                    <canvas id="catch-canvas" class="absolute inset-0 w-full h-full"></canvas>
+                    <div class="absolute bottom-2 left-0 right-0 text-center pointer-events-none text-xs text-gray-500 bg-white/70 py-1">
+                        👉 左右滑動或拖曳滑鼠控制竹籃接住美食！
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==================== 4. VICTORY / RESULTS SCREEN ==================== -->
+        <div id="screen-victory" class="hidden text-center py-6 space-y-6">
+            <div class="w-24 h-24 sm:w-32 sm:h-32 mx-auto bg-gradient-to-tr from-amber-400 to-yellow-300 rounded-full flex items-center justify-center shadow-xl text-5xl sm:text-6xl animate-bounce border-4 border-white">
+                🏆
+            </div>
+            <div class="space-y-2">
+                <h2 class="text-3xl font-black text-gray-800 font-fun">恭喜完成所有冒險！</h2>
+                <p class="text-gray-600 text-sm sm:text-base">你已經完美征服了台灣 Kawaii 美食地圖！</p>
+            </div>
+
+            <!-- Score Breakdown Card -->
+            <div class="bg-rose-50 border border-rose-200 rounded-2xl p-4 max-w-sm mx-auto space-y-3 text-left shadow-sm">
+                <div class="flex justify-between items-center text-sm sm:text-base">
+                    <span class="text-gray-600"><i class="fa-solid fa-stopwatch mr-2 text-rose-400"></i>總花費時間</span>
+                    <span id="final-time" class="font-bold text-gray-900">00:45</span>
+                </div>
+                <div class="flex justify-between items-center text-sm sm:text-base">
+                    <span class="text-gray-600"><i class="fa-solid fa-star mr-2 text-amber-400"></i>最終總得分</span>
+                    <span id="final-score" class="font-bold text-rose-600 text-lg">450 分</span>
+                </div>
+                <div class="flex justify-between items-center text-sm sm:text-base border-t border-rose-200 pt-2">
+                    <span class="text-gray-600"><i class="fa-solid fa-award mr-2 text-purple-500"></i>美食稱號</span>
+                    <span id="final-badge" class="font-black text-purple-600 text-sm sm:text-base">首席萌系美食家 🌟</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-3 pt-2">
+                <button onclick="restartGame()" class="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white font-bold font-fun rounded-2xl shadow-md hover:opacity-90 transition border-2 border-white">
+                    <i class="fa-solid fa-rotate-right mr-2"></i>再玩一次
+                </button>
+                <button onclick="shareResult()" class="px-6 py-3 bg-white border-2 border-rose-300 text-rose-700 font-bold font-fun rounded-2xl shadow-sm hover:bg-rose-50 transition">
+                    <i class="fa-solid fa-share-nodes mr-2"></i>複製戰績
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Notification Toast Modal -->
+    <div id="custom-toast" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-gray-900/90 backdrop-blur text-white px-6 py-3 rounded-2xl shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center gap-3">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-green-400 text-lg"></i>
+        <span id="toast-text" class="text-sm font-medium">提示訊息</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-6 text-center text-xs text-gray-600 font-medium z-10">
+        吃貨地圖 GO! &copy; 2026 台灣 Kawaii 美食文化體驗
+    </footer>
+
+    <!-- Game Logic & Web Audio Script -->
+    <script>
+        /* ==================== 1. WEB AUDIO API & BGM SYSTEM ==================== */
+        let audioCtx = null;
+        let bgmInterval = null;
+        let isBgmPlaying = false;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function startBGMLoop() {
+            stopBGMLoop();
+            // Cute upbeat pentatonic melody loop
+            const melody = [523.25, 587.33, 659.25, 783.99, 880, 783.99, 659.25, 587.33];
+            let noteIndex = 0;
+
+            bgmInterval = setInterval(() => {
+                if (!isBgmPlaying || !audioCtx) return;
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(melody[noteIndex], audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+
+                    noteIndex = (noteIndex + 1) % melody.length;
+                } catch (e) {
+                    console.log("BGM playback error", e);
+                }
+            }, 300);
+        }
+
+        function toggleBGM() {
+            initAudio();
+            isBgmPlaying = !isBgmPlaying;
+            const btnText = document.getElementById('bgm-text');
+            const bgmIcon = document.getElementById('bgm-icon');
+
+            if (isBgmPlaying) {
+                btnText.textContent = "音樂播放中";
+                bgmIcon.className = "fa-solid fa-volume-high text-lg animate-bounce";
+                startBGMLoop();
+                playSound('click');
+            } else {
+                btnText.textContent = "音樂關閉";
+                bgmIcon.className = "fa-solid fa-volume-xmark text-lg";
+                stopBGMLoop();
+            }
+        }
+
+        function stopBGMLoop() {
+            if (bgmInterval) {
+                clearInterval(bgmInterval);
+                bgmInterval = null;
+            }
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(450, now);
+                    osc.frequency.exponentialRampToValueAtTime(850, now + 0.08);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'match' || type === 'collect') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.08);
+                    osc.frequency.setValueAtTime(783.99, now + 0.16);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+                    osc.start(now);
+                    osc.stop(now + 0.28);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.linearRampToValueAtTime(110, now + 0.2);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                } else if (type === 'win') {
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, idx) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.frequency.setValueAtTime(freq, now + idx * 0.12);
+                        g.gain.setValueAtTime(0.15, now + idx * 0.12);
+                        g.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.12 + 0.25);
+                        o.start(now + idx * 0.12);
+                        o.stop(now + idx * 0.12 + 0.25);
+                    });
+                }
+            } catch (e) {
+                console.log("Audio FX error", e);
+            }
+        }
+
+        /* ==================== 2. GAME STATE VARIABLES ==================== */
+        let currentStage = 1;
+        let totalScore = 0;
+        let gameTimer = null;
+        let secondsElapsed = 0;
+
+        // Stage 1: Memory Match Data
+        const memoryItems = [
+            { id: 'boba', emoji: '🧋', name: '珍珠奶茶' },
+            { id: 'xlb', emoji: '🥟', name: '小籠包' },
+            { id: 'beef', emoji: '🍜', name: '牛肉麵' },
+            { id: 'chicken', emoji: '🍗', name: '雞排' },
+            { id: 'mango', emoji: '🥭', name: '芒果冰' },
+            { id: 'pineapple', emoji: '🍍', name: '鳳梨酥' }
+        ];
+        let memoryCards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let isLockBoard = false;
+
+        // Stage 2: Arrow Key Arcade Navigation Data
+        let arcadeActive = false;
+        let arcadePlayer = { x: 150, y: 150, size: 28, speed: 6 };
+        let arcadeCollectibles = [];
+        let arcadeScoreCount = 0;
+        const arcadeTarget = 10;
+        let arcadeAnimId = null;
+        let keysPressed = {};
+
+        // Stage 3: Trivia Quiz Data
+        const quizData = [
+            {
+                question: "台南最具代表性的在地特色早餐，常搭配牛肉湯一起吃的是什麼？",
+                options: ["肉燥飯 / 滷肉飯", "美式鬆餅", "廣東粥", "日式壽司"],
+                answer: 0
+            },
+            {
+                question: "台灣著名的夜市小吃「大腸包小腸」，其中的「小腸」指的是什麼？",
+                options: ["糯米腸", "豬小腸外衣包著香腸", "蚵仔煎", "甜不辣"],
+                answer: 1
+            },
+            {
+                question: "聞名全台的「珍珠奶茶」發源於哪一個台灣城市？",
+                options: ["台北市", "高雄市", "台中市", "台南市"],
+                answer: 2
+            },
+            {
+                question: "經典夜市小吃「蚵仔煎」主要的靈魂醬汁通常帶有什麼獨特風味？",
+                options: ["純醬油膏", "酸辣泰式醬", "甜辣醬與海山醬風味", "黃芥末醬"],
+                answer: 2
+            },
+            {
+                question: "台灣經典伴手禮「鳳梨酥」中，傳統冬瓜餡常與哪種水果一起熬煮增加口感？",
+                options: ["蘋果", "鳳梨", "芒果", "香蕉"],
+                answer: 1
+            },
+            {
+                question: "夏季消暑聖品「芒果冰」最常選用台灣哪一個產地的芒果最為知名？",
+                options: ["苗栗大湖", "台南玉井", "彰化田中", "宜蘭礁溪"],
+                answer: 1
+            }
+        ];
+        let currentQuizIndex = 0;
+
+        // Stage 4: Catch Food Catcher Data
+        let catchAnimationId = null;
+        let catchItemsList = [];
+        let basket = { x: 150, y: 0, width: 70, height: 40 };
+        let caughtCount = 0;
+        const targetCatchCount = 8;
+        let catchActive = false;
+
+        /* ==================== 3. CONTROLLER & NAVIGATION ==================== */
+        function showScreen(screenId) {
+            ['screen-start', 'screen-intro', 'screen-game', 'screen-victory'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        function showToast(text, isSuccess = true) {
+            const toast = document.getElementById('custom-toast');
+            const toastText = document.getElementById('toast-text');
+            const toastIcon = document.getElementById('toast-icon');
+            
+            toastText.textContent = text;
+            toastIcon.className = isSuccess ? "fa-solid fa-circle-check text-green-400 text-lg" : "fa-solid fa-circle-exclamation text-yellow-400 text-lg";
+            
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2200);
+        }
+
+        function startGame() {
+            playSound('click');
+            currentStage = 1;
+            totalScore = 0;
+            secondsElapsed = 0;
+            startTimer();
+            showLevelIntro();
+        }
+
+        function startTimer() {
+            if (gameTimer) clearInterval(gameTimer);
+            gameTimer = setInterval(() => {
+                secondsElapsed++;
+                const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+                const secs = String(secondsElapsed % 60).padStart(2, '0');
+                document.getElementById('hud-timer').textContent = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (gameTimer) clearInterval(gameTimer);
+        }
+
+        function showLevelIntro() {
+            showScreen('screen-intro');
+            const titles = ["美食記憶翻牌", "方向鍵小吃收集大作戰", "美味地標快問快答", "終極夜市大胃王"];
+            const descs = [
+                "請在最短時間內找出所有相同的台灣經典小吃配對！",
+                "使用鍵盤方向鍵 (Arrow Keys / WASD) 控制可愛貓咪收集 10 個美味小吃！",
+                "挑戰你的台灣美食與文化常識，回答 6 道趣味快問快答！",
+                "移動竹籃接住掉落的台灣美味，避開辣椒雷區！"
+            ];
+            const badges = ["第一關 · 記憶大考驗", "第二關 · 方向鍵大冒險", "第三關 · 智慧快問快答 (共6題)", "第四關 · 夜市接福氣"];
+
+            document.getElementById('intro-badge').textContent = badges[currentStage - 1];
+            document.getElementById('intro-title').textContent = titles[currentStage - 1];
+            document.getElementById('intro-desc').textContent = descs[currentStage - 1];
+        }
+
+        function startCurrentLevel() {
+            playSound('click');
+            showScreen('screen-game');
+            
+            // Cleanup previous stage loops
+            arcadeActive = false;
+            catchActive = false;
+            cancelAnimationFrame(arcadeAnimId);
+            cancelAnimationFrame(catchAnimationId);
+
+            document.querySelectorAll('.stage-content').forEach(el => el.classList.add('hidden'));
+            
+            const stageNames = ["第一關：記憶翻牌", "第二關：方向鍵收集", "第三關：快問快答", "第四關：夜市接福氣"];
+            document.getElementById('hud-stage-name').textContent = stageNames[currentStage - 1];
+            document.getElementById('hud-score').textContent = `${totalScore} 分`;
+
+            if (currentStage === 1) {
+                document.getElementById('stage-1').classList.remove('hidden');
+                initMemoryGame();
+            } else if (currentStage === 2) {
+                document.getElementById('stage-2').classList.remove('hidden');
+                initArcadeGame();
+            } else if (currentStage === 3) {
+                document.getElementById('stage-3').classList.remove('hidden');
+                initQuizGame();
+            } else if (currentStage === 4) {
+                document.getElementById('stage-4').classList.remove('hidden');
+                initCatchGame();
+            }
+        }
+
+        function advanceStage() {
+            currentStage++;
+            if (currentStage > 4) {
+                endGameVictory();
+            } else {
+                showLevelIntro();
+            }
+        }
+
+        /* ==================== 4. STAGE 1: MEMORY MATCH ==================== */
+        function initMemoryGame() {
+            matchedPairs = 0;
+            flippedCards = [];
+            isLockBoard = false;
+
+            let deck = [...memoryItems, ...memoryItems]
+                .sort(() => Math.random() - 0.5)
+                .map((item, index) => ({
+                    uniqueId: index,
+                    id: item.id,
+                    emoji: item.emoji,
+                    name: item.name,
+                    isFlipped: false,
+                    isMatched: false
+                }));
+
+            memoryCards = deck;
+            renderMemoryGrid();
+        }
+
+        function renderMemoryGrid() {
+            const grid = document.getElementById('memory-grid');
+            grid.innerHTML = '';
+            memoryCards.forEach((card, index) => {
+                const cardEl = document.createElement('div');
+                cardEl.className = `w-20 h-24 sm:w-24 sm:h-28 bg-gradient-to-br from-rose-400 to-pink-500 rounded-2xl shadow-md cursor-pointer flex items-center justify-center text-4xl sm:text-5xl transition transform duration-200 select-none ${card.isFlipped || card.isMatched ? 'bg-white border-2 border-rose-400 rotate-y-180' : 'hover:scale-105'}`;
+                
+                if (card.isFlipped || card.isMatched) {
+                    cardEl.innerHTML = `<span>${card.emoji}</span>`;
+                    cardEl.style.background = '#ffffff';
+                } else {
+                    cardEl.innerHTML = `<i class="fa-solid fa-utensils text-white/80 text-xl"></i>`;
+                }
+
+                cardEl.onclick = () => flipCard(index);
+                grid.appendChild(cardEl);
+            });
+        }
+
+        function flipCard(index) {
+            if (isLockBoard) return;
+            let card = memoryCards[index];
+            if (card.isFlipped || card.isMatched) return;
+
+            playSound('click');
+            card.isFlipped = true;
+            flippedCards.push({ index, card });
+            renderMemoryGrid();
+
+            if (flippedCards.length === 2) {
+                checkMemoryMatch();
+            }
+        }
+
+        function checkMemoryMatch() {
+            isLockBoard = true;
+            const [first, second] = flippedCards;
+
+            if (first.card.id === second.card.id) {
+                playSound('match');
+                memoryCards[first.index].isMatched = true;
+                memoryCards[second.index].isMatched = true;
+                matchedPairs++;
+                totalScore += 30;
+                document.getElementById('hud-score').textContent = `${totalScore} 分`;
+                
+                resetTurn();
+
+                if (matchedPairs === memoryItems.length) {
+                    showToast("第一關完美通關！太棒了！");
+                    setTimeout(() => {
+                        advanceStage();
+                    }, 1200);
+                }
+            } else {
+                playSound('wrong');
+                setTimeout(() => {
+                    memoryCards[first.index].isFlipped = false;
+                    memoryCards[second.index].isFlipped = false;
+                    renderMemoryGrid();
+                    resetTurn();
+                }, 800);
+            }
+        }
+
+        function resetTurn() {
+            flippedCards = [];
+            isLockBoard = false;
+        }
+
+        /* ==================== 5. STAGE 2: KEYBOARD / ARROW KEY ARCADE GAME ==================== */
+        function initArcadeGame() {
+            arcadeScoreCount = 0;
+            arcadeActive = true;
+            document.getElementById('arcade-progress').textContent = `目標: ${arcadeScoreCount} / ${arcadeTarget}`;
+
+            const container = document.getElementById('arcade-container');
+            const canvas = document.getElementById('arcade-canvas');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+
+            arcadePlayer.x = canvas.width / 2;
+            arcadePlayer.y = canvas.height / 2;
+
+            arcadeCollectibles = [];
+            spawnArcadeCollectible(canvas);
+            spawnArcadeCollectible(canvas);
+            spawnArcadeCollectible(canvas);
+
+            window.onkeydown = (e) => {
+                if (!arcadeActive) return;
+                keysPressed[e.key] = true;
+                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+                    e.preventDefault();
+                }
+            };
+            window.onkeyup = (e) => {
+                if (!arcadeActive) return;
+                keysPressed[e.key] = false;
+            };
+
+            cancelAnimationFrame(arcadeAnimId);
+            arcadeLoop();
+        }
+
+        function arcadeMove(dir) {
+            if (!arcadeActive) return;
+            const canvas = document.getElementById('arcade-canvas');
+            const step = 25;
+            if (dir === 'up') arcadePlayer.y = Math.max(20, arcadePlayer.y - step);
+            if (dir === 'down') arcadePlayer.y = Math.min(canvas.height - 20, arcadePlayer.y + step);
+            if (dir === 'left') arcadePlayer.x = Math.max(20, arcadePlayer.x - step);
+            if (dir === 'right') arcadePlayer.x = Math.min(canvas.width - 20, arcadePlayer.x + step);
+        }
+
+        function spawnArcadeCollectible(canvas) {
+            const foodOptions = ['🥟', '🧋', '🍜', '🥭', '🍍', '🍧'];
+            arcadeCollectibles.push({
+                x: 40 + Math.random() * (canvas.width - 80),
+                y: 40 + Math.random() * (canvas.height - 80),
+                emoji: foodOptions[Math.floor(Math.random() * foodOptions.length)]
+            });
+        }
+
+        function arcadeLoop() {
+            if (!arcadeActive) return;
+            const canvas = document.getElementById('arcade-canvas');
+            const ctx = canvas.getContext('2d');
+
+            if (keysPressed['ArrowUp'] || keysPressed['w'] || keysPressed['W']) arcadePlayer.y -= arcadePlayer.speed;
+            if (keysPressed['ArrowDown'] || keysPressed['s'] || keysPressed['S']) arcadePlayer.y += arcadePlayer.speed;
+            if (keysPressed['ArrowLeft'] || keysPressed['a'] || keysPressed['A']) arcadePlayer.x -= arcadePlayer.speed;
+            if (keysPressed['ArrowRight'] || keysPressed['d'] || keysPressed['D']) arcadePlayer.x += arcadePlayer.speed;
+
+            arcadePlayer.x = Math.max(30, Math.min(canvas.width - 30, arcadePlayer.x));
+            arcadePlayer.y = Math.max(30, Math.min(canvas.height - 30, arcadePlayer.y));
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            arcadeCollectibles.forEach(item => {
+                ctx.font = '36px sans-serif';
+                ctx.fillText(item.emoji, item.x - 18, item.y + 14);
+            });
+
+            ctx.font = '42px sans-serif';
+            ctx.fillText('🐱', arcadePlayer.x - 21, arcadePlayer.y + 16);
+
+            for (let i = arcadeCollectibles.length - 1; i >= 0; i--) {
+                let item = arcadeCollectibles[i];
+                let dist = Math.hypot(arcadePlayer.x - item.x, arcadePlayer.y - item.y);
+                if (dist < 36) {
+                    playSound('collect');
+                    arcadeScoreCount++;
+                    totalScore += 20;
+                    document.getElementById('arcade-progress').textContent = `目標: ${arcadeScoreCount} / ${arcadeTarget}`;
+                    document.getElementById('hud-score').textContent = `${totalScore} 分`;
+
+                    arcadeCollectibles.splice(i, 1);
+                    spawnArcadeCollectible(canvas);
+
+                    if (arcadeScoreCount >= arcadeTarget) {
+                        arcadeActive = false;
+                        cancelAnimationFrame(arcadeAnimId);
+                        showToast("第二關圓滿達成！太厲害了！");
+                        setTimeout(() => {
+                            advanceStage();
+                        }, 1200);
+                        return;
+                    }
+                }
+            }
+
+            arcadeAnimId = requestAnimationFrame(arcadeLoop);
+        }
+
+        /* ==================== 6. STAGE 3: TRIVIA QUIZ ==================== */
+        function initQuizGame() {
+            currentQuizIndex = 0;
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const q = quizData[currentQuizIndex];
+            document.getElementById('quiz-counter').textContent = `問題 ${currentQuizIndex + 1} / ${quizData.length}`;
+            document.getElementById('quiz-question').textContent = q.question;
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 bg-white border-2 border-rose-200 hover:border-rose-400 rounded-2xl shadow-sm font-medium text-gray-800 hover:bg-rose-50 transition transform hover:-translate-y-0.5";
+                btn.innerHTML = `<span class="inline-block w-7 h-7 bg-rose-100 text-rose-700 rounded-full text-center font-bold mr-2 leading-7">${String.fromCharCode(65 + idx)}</span> ${opt}`;
+                btn.onclick = () => answerQuiz(idx, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function answerQuiz(selectedIndex, buttonEl) {
+            const q = quizData[currentQuizIndex];
+            const allBtns = document.getElementById('quiz-options').querySelectorAll('button');
+            
+            allBtns.forEach(b => b.disabled = true);
+
+            if (selectedIndex === q.answer) {
+                playSound('match');
+                buttonEl.className = "w-full text-left p-4 bg-emerald-100 border-2 border-emerald-500 rounded-2xl shadow-sm font-bold text-emerald-800 transition";
+                buttonEl.innerHTML += ` <i class="fa-solid fa-check float-right text-emerald-600 mt-1"></i>`;
+                totalScore += 50;
+                showToast("回答正確！太聰明啦！", true);
+            } else {
+                playSound('wrong');
+                buttonEl.className = "w-full text-left p-4 bg-rose-100 border-2 border-rose-500 rounded-2xl shadow-sm font-bold text-rose-800 transition";
+                buttonEl.innerHTML += ` <i class="fa-solid fa-xmark float-right text-rose-600 mt-1"></i>`;
+                allBtns[q.answer].className = "w-full text-left p-4 bg-emerald-50 border-2 border-emerald-400 rounded-2xl shadow-sm font-bold text-emerald-800 transition";
+                showToast("答錯囉！正確答案已標記", false);
+            }
+
+            document.getElementById('hud-score').textContent = `${totalScore} 分`;
+
+            setTimeout(() => {
+                currentQuizIndex++;
+                if (currentQuizIndex < quizData.length) {
+                    renderQuizQuestion();
+                } else {
+                    showToast("第三關順利通關！準備進入最終大胃王挑戰！");
+                    setTimeout(() => {
+                        advanceStage();
+                    }, 1500);
+                }
+            }, 1500);
+        }
+
+        /* ==================== 7. STAGE 4: NIGHT MARKET CATCHER ==================== */
+        function initCatchGame() {
+            caughtCount = 0;
+            catchActive = true;
+            catchItemsList = [];
+            document.getElementById('catch-progress').textContent = `已接獲: ${caughtCount} / ${targetCatchCount}`;
+
+            const container = document.getElementById('catch-canvas-container');
+            const canvas = document.getElementById('catch-canvas');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            basket.x = canvas.width / 2 - basket.width / 2;
+            basket.y = canvas.height - 50;
+
+            const moveHandler = (e) => {
+                if (!catchActive) return;
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                if (clientX !== undefined) {
+                    basket.x = clientX - rect.left - basket.width / 2;
+                    if (basket.x < 0) basket.x = 0;
+                    if (basket.x > canvas.width - basket.width) basket.x = canvas.width - basket.width;
+                }
+            };
+
+            canvas.onmousemove = moveHandler;
+            canvas.ontouchmove = moveHandler;
+            canvas.ontouchstart = moveHandler;
+
+            cancelAnimationFrame(catchAnimationId);
+            catchLoop();
+        }
+
+        function catchLoop() {
+            if (!catchActive) return;
+            const canvas = document.getElementById('catch-canvas');
+            const ctx = canvas.getContext('2d');
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (Math.random() < 0.035 && catchItemsList.length < 5) {
+                const foods = [
+                    { emoji: '🥟', type: 'good', name: '小籠包', pts: 15 },
+                    { emoji: '🧋', type: 'good', name: '珍奶', pts: 15 },
+                    { emoji: '🍗', type: 'good', name: '雞排', pts: 15 },
+                    { emoji: '🍍', type: 'good', name: '鳳梨酥', pts: 15 },
+                    { emoji: '🌶️', type: 'bad', name: '辣椒', pts: -10 }
+                ];
+                const selected = foods[Math.floor(Math.random() * foods.length)];
+                catchItemsList.push({
+                    x: Math.random() * (canvas.width - 50),
+                    y: -40,
+                    size: 40,
+                    speed: 2.2 + Math.random() * 2.5,
+                    ...selected
+                });
+            }
+
+            ctx.fillStyle = '#f43f5e';
+            ctx.beginPath();
+            ctx.roundRect(basket.x, basket.y, basket.width, basket.height, [14, 14, 18, 18]);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 15px sans-serif';
+            ctx.fillText('🧺 美食竹籃', basket.x + 4, basket.y + 26);
+
+            for (let i = catchItemsList.length - 1; i >= 0; i--) {
+                let item = catchItemsList[i];
+                item.y += item.speed;
+
+                ctx.font = '38px sans-serif';
+                ctx.fillText(item.emoji, item.x, item.y);
+
+                if (
+                    item.y + 24 >= basket.y &&
+                    item.y <= basket.y + basket.height &&
+                    item.x + 30 >= basket.x &&
+                    item.x <= basket.x + basket.width
+                ) {
+                    if (item.type === 'good') {
+                        playSound('collect');
+                        caughtCount++;
+                        totalScore += item.pts;
+                        showToast(`+15分！美味${item.name}`, true);
+                    } else {
+                        playSound('wrong');
+                        caughtCount = Math.max(0, caughtCount - 1);
+                        totalScore = Math.max(0, totalScore - 10);
+                        showToast(`哎呀！辣椒扣分！`, false);
+                    }
+                    document.getElementById('catch-progress').textContent = `已接獲: ${caughtCount} / ${targetCatchCount}`;
+                    document.getElementById('hud-score').textContent = `${totalScore} 分`;
+                    
+                    catchItemsList.splice(i, 1);
+
+                    if (caughtCount >= targetCatchCount) {
+                        catchActive = false;
+                        cancelAnimationFrame(catchAnimationId);
+                        showToast("恭喜通關所有關卡！");
+                        setTimeout(() => {
+                            advanceStage();
+                        }, 1200);
+                        return;
+                    }
+                    continue;
+                }
+
+                if (item.y > canvas.height) {
+                    catchItemsList.splice(i, 1);
+                }
+            }
+
+            catchAnimationId = requestAnimationFrame(catchLoop);
+        }
+
+        /* ==================== 8. VICTORY & SHARING ==================== */
+        function endGameVictory() {
+            stopTimer();
+            stopBGMLoop();
+            playSound('win');
+            showScreen('screen-victory');
+
+            const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+            const secs = String(secondsElapsed % 60).padStart(2, '0');
+            document.getElementById('final-time').textContent = `${mins}:${secs}`;
+            document.getElementById('final-score').textContent = `${totalScore} 分`;
+
+            let badgeTitle = "台灣美食小達人 🥟";
+            if (totalScore >= 350) {
+                badgeTitle = "首席萌系美食家 🌟";
+            } else if (totalScore >= 220) {
+                badgeTitle = "夜市尋寶探險家 🍜";
+            }
+            document.getElementById('final-badge').textContent = badgeTitle;
+        }
+
+        function restartGame() {
+            playSound('click');
+            showScreen('screen-start');
+        }
+
+        function shareResult() {
+            playSound('click');
+            const text = `我在「吃貨地圖GO! 台灣美食大冒險」中獲得了 ${totalScore} 分，花費時間 ${document.getElementById('final-time').textContent}，封號是【${document.getElementById('final-badge').textContent}】！快來挑戰我吧！`;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("已成功複製戰績到剪貼簿！");
+                }).catch(() => {
+                    fallbackCopyText(text);
+                });
+            } else {
+                fallbackCopyText(text);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("已成功複製戰績到剪貼簿！");
+            } catch (err) {
+                showToast("複製失敗，請手動截圖分享", false);
+            }
+            document.body.removeChild(textArea);
+        }
+    </script>
+</body>
+</html>
